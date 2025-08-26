@@ -12,6 +12,8 @@
 #include "RaidAq20Strategy.h"
 #include "RaidIccStrategy.h"
 #include "RaidVoAStrategy.h"
+#include "RaidKaraStrategy.h"
+#include "RaidZaStrategy.h"
 
 class RaidStrategyContext : public NamedObjectContext<Strategy>
 {
@@ -31,6 +33,8 @@ public:
         creators["uld"] = &RaidStrategyContext::uld;
         creators["icc"] = &RaidStrategyContext::icc;
         creators["onyxia"] = &RaidStrategyContext::onyxia;
+        creators["za"] = &RaidStrategyContext::za;
+        creators["kara"] = &RaidStrategyContext::kara;
     }
 
 private:
@@ -44,6 +48,8 @@ private:
     static Strategy* uld(PlayerbotAI* botAI) { return new RaidUlduarStrategy(botAI); }
     static Strategy* icc(PlayerbotAI* botAI) { return new RaidIccStrategy(botAI); }
     static Strategy* onyxia(PlayerbotAI* botAI) { return new RaidOnyxiaStrategy(botAI); }
+    static Strategy* za(PlayerbotAI* botAI) { return new RaidZaStrategy(botAI); }
+    static Strategy* kara(PlayerbotAI* botAI) { return new RaidKaraStrategy(botAI); }
 };
 
 #endif
