@@ -67,6 +67,8 @@
 #include "raids/sunwell/RaidSwpTriggerContext.h"
 #include "raids/icecrown/RaidIccActionContext.h"
 #include "raids/icecrown/RaidIccTriggerContext.h"
+#include "raids/karazhan/RaidKaraActionContext.h"
+#include "raids/karazhan/RaidKaraTriggerContext.h"
 
 SharedNamedObjectContextList<Strategy> AiObjectContext::sharedStrategyContexts;
 SharedNamedObjectContextList<Action> AiObjectContext::sharedActionContexts;
@@ -136,9 +138,7 @@ void AiObjectContext::BuildSharedActionContexts(SharedNamedObjectContextList<Act
     actionContexts.Add(new RaidUlduarActionContext());
     actionContexts.Add(new RaidOnyxiaActionContext());
     actionContexts.Add(new RaidIccActionContext());
-    actionContexts.Add(new RaidZaActionContext());
     actionContexts.Add(new RaidKaraActionContext());
-    actionContexts.Add(new RaidSscActionContext());
     actionContexts.Add(new WotlkDungeonUKActionContext());
     actionContexts.Add(new WotlkDungeonNexActionContext());
     actionContexts.Add(new WotlkDungeonANActionContext());
@@ -174,15 +174,7 @@ void AiObjectContext::BuildSharedTriggerContexts(SharedNamedObjectContextList<Tr
     triggerContexts.Add(new RaidUlduarTriggerContext());
     triggerContexts.Add(new RaidOnyxiaTriggerContext());
     triggerContexts.Add(new RaidIccTriggerContext());
-    triggerContexts.Add(new RaidZaTriggerContext());
     triggerContexts.Add(new RaidKaraTriggerContext());
-    triggerContexts.Add(new RaidGruulTriggerContext());
-    triggerContexts.Add(new RaidMagTriggerContext());
-    triggerContexts.Add(new RaidSscTriggerContext());
-    triggerContexts.Add(new RaidTkTriggerContext());
-    triggerContexts.Add(new RaidHyjalTriggerContext());
-    triggerContexts.Add(new RaidBtTriggerContext());
-    triggerContexts.Add(new RaidSwpTriggerContext());
     triggerContexts.Add(new WotlkDungeonUKTriggerContext());
     triggerContexts.Add(new WotlkDungeonNexTriggerContext());
     triggerContexts.Add(new WotlkDungeonANTriggerContext());

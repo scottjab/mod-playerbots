@@ -1481,6 +1481,9 @@ void PlayerbotAI::ApplyInstanceStrategies(uint32 mapId, bool tellMaster)
         case 565:
             strategyName = "gruulslair";  // Gruul's Lair
             break;
+        case 532:
+            strategyName = "kara";  // Karazhan
+            break;
         case 568:
             strategyName = "za";  // Zul'Aman
             break;

@@ -7,9 +7,8 @@ bool KaraStayBehindBossAction::Execute(Event event)
     if (!boss)
         return false;
 
-    // Try to move behind target using existing movement action
-    SetBehindTargetAction setBehind(botAI);
-    return setBehind.Execute(event);
+    // Try to move behind target
+    return MoveBehindTarget(boss);
 }
 
 bool KaraCuratorEvocateAction::Execute(Event event)
@@ -32,8 +31,7 @@ bool KaraAranAvoidAoeAction::Execute(Event event)
     if (bot->GetVictim() && bot->GetGUID() == bot->GetVictim()->GetGUID())
         return false;
 
-    AvoidAoeAction avoid(botAI);
-    return avoid.Execute(event);
+    return MoveToSafePoint();
 }
 
 bool KaraMalchezaarAvoidInfernalAction::Execute(Event event)
@@ -43,7 +41,7 @@ bool KaraMalchezaarAvoidInfernalAction::Execute(Event event)
     if (!infernal)
         return false;
 
-    return MoveAway(infernal, 20.0f);
+    return FleeFrom(infernal, 20.0f);
 }
 
 

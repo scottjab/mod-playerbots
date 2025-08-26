@@ -13,17 +13,9 @@ bool ZaAkilzonElectricalStormTrigger::IsActive()
         if (!u)
             continue;
         if (u->HasAura(43648))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Electrical Storm target identified");
             return true;
-        }
         if (u->GetDynObject(44007))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Electrical Storm eye dynobject detected");
             return true;
-        }
     }
     return false;
 }
@@ -31,13 +23,7 @@ bool ZaAkilzonElectricalStormTrigger::IsActive()
 // Static Disruption debuff on player: 43622
 bool ZaStaticDisruptionTrigger::IsActive()
 {
-    if (bot->HasAura(43622))
-    {
-        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-            LOG_INFO("playerbots", "[Raid][Zul'Aman] Static Disruption on {}", bot->GetName());
-        return true;
-    }
-    return false;
+    return bot->HasAura(43622);
 }
 
 // Nalorakk: Mangle (42389) on current tank -> prompt external cooldowns or awareness; tank detection via role
@@ -49,11 +35,7 @@ bool ZaNalorakkMangleOnTankTrigger::IsActive()
         if (!victim)
             return false;
         if (victim->HasAura(42389))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Nalorakk Mangle on tank");
             return botAI->IsTank(bot) || botAI->IsHeal(bot);
-        }
     }
     return false;
 }
@@ -62,14 +44,7 @@ bool ZaNalorakkMangleOnTankTrigger::IsActive()
 bool ZaJanalaiFireBombsTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "jan'alai"))
-    {
-        if (boss->HasAura(42621))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Jan'alai Fire Bombs channel active");
-            return true;
-        }
-    }
+        return boss->HasAura(42621);
     return false;
 }
 
@@ -79,12 +54,7 @@ bool ZaJanalaiFlameBreathTrigger::IsActive()
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "jan'alai"))
     {
         if (Spell* spell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL))
-            if (spell->m_spellInfo && spell->m_spellInfo->Id == 43140)
-            {
-                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                    LOG_INFO("playerbots", "[Raid][Zul'Aman] Jan'alai casting Flame Breath");
-                return true;
-            }
+            return spell->m_spellInfo && spell->m_spellInfo->Id == 43140;
     }
     return false;
 }
@@ -95,39 +65,22 @@ bool ZaHalazziTotemTrigger::IsActive()
     GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "24224");
     for (ObjectGuid guid : npcs)
         if (Unit* u = botAI->GetUnit(guid))
-            if (u->IsAlive() && u->GetEntry() == 24224)
-            {
-                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                    LOG_INFO("playerbots", "[Raid][Zul'Aman] Halazzi totem present");
+            if (u->IsAlive())
                 return true;
-            }
     return false;
 }
 
 // Zul'jin Bear phase: Creeping Paralysis 43095 on players
 bool ZaZuljinCreepingParalysisTrigger::IsActive()
 {
-    if (bot->HasAura(43095))
-    {
-        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-            LOG_INFO("playerbots", "[Raid][Zul'Aman] Creeping Paralysis on {}", bot->GetName());
-        return true;
-    }
-    return false;
+    return bot->HasAura(43095);
 }
 
 // Zul'jin Eagle phase: Energy Storm 43983 active on boss
 bool ZaZuljinEnergyStormTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "zul'jin"))
-    {
-        if (boss->HasAura(43983))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Energy Storm active");
-            return true;
-        }
-    }
+        return boss->HasAura(43983);
     return false;
 }
 
@@ -137,11 +90,7 @@ bool ZaZuljinClawRageTrigger::IsActive()
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "zul'jin"))
     {
         if (boss->HasAura(43149))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Claw Rage active");
             return true;
-        }
     }
     return false;
 }
@@ -150,14 +99,7 @@ bool ZaZuljinClawRageTrigger::IsActive()
 bool ZaZuljinFlamePillarsTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "zul'jin"))
-    {
-        if (boss->HasAura(43213) || boss->HasAura(43216))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][Zul'Aman] Flame Whirl/Pillars active");
-            return true;
-        }
-    }
+        return boss->HasAura(43213) || boss->HasAura(43216);
     return false;
 }
 
