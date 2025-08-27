@@ -2,6 +2,7 @@
 
 #include "PlayerbotAI.h"
 #include "Playerbots.h"
+#include "Player.h"
 
 // Move into the storm safe eye on Akil'zon: target has dynobject 44007; fallback to boss target position
 bool RaidZaMoveToStormEyeAction::Execute(Event /*event*/)
@@ -60,6 +61,36 @@ bool RaidZaKillHalazziTotemAction::Execute(Event /*event*/)
 bool RaidZaSwapToBearSideAction::Execute(Event /*event*/)
 {
     return botAI->DoSpecificAction("rear flank");
+}
+
+
+bool RaidZaStackOnMasterDuringBombsAction::Execute(Event /*event*/)
+{
+    Player* master = botAI->GetMaster();
+    if (!master || !master->IsAlive())
+        return false;
+
+    // Tanks should not stack by this action
+    if (botAI->IsTank(bot))
+        return false;
+
+    // Move to within melee range of master (stand on the player)
+    return MoveNear(master, 1.5f);
+}
+
+bool RaidZaStackOnMasterDuringBombsAction::isUseful()
+{
+    // Tanks do not stack; they maintain positioning
+    if (botAI->IsTank(bot))
+        return false;
+
+    // Only during Jan'alai fire bombs
+    if (Unit* boss = AI_VALUE2(Unit*, "find target", "jan'alai"))
+    {
+        if (boss->HasAura(42621))
+            return true;
+    }
+    return false;
 }
 
 

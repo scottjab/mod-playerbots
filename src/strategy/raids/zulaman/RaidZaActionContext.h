@@ -14,6 +14,7 @@ public:
         creators["za spread for storm"] = &RaidZaActionContext::spread_for_storm;
         creators["za kill halazzi totem"] = &RaidZaActionContext::kill_halazzi_totem;
         creators["za swap to bear side"] = &RaidZaActionContext::swap_to_bear_side;
+        creators["za stack on master during bombs"] = &RaidZaActionContext::stack_on_master_during_bombs;
     }
 
 private:
@@ -21,6 +22,7 @@ private:
     static Action* spread_for_storm(PlayerbotAI* ai) { return new RaidZaSpreadForStormAction(ai); }
     static Action* kill_halazzi_totem(PlayerbotAI* ai) { return new RaidZaKillHalazziTotemAction(ai); }
     static Action* swap_to_bear_side(PlayerbotAI* ai) { return new RaidZaSwapToBearSideAction(ai); }
+    static Action* stack_on_master_during_bombs(PlayerbotAI* ai) { return new RaidZaStackOnMasterDuringBombsAction(ai); }
 };
 
 #endif

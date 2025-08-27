@@ -10,6 +10,7 @@ bool KaraStayBehindBossAction::Execute(Event event)
     // Try to move behind target using existing movement action
     SetBehindTargetAction setBehind(botAI);
     return setBehind.Execute(event);
+    
 }
 
 bool KaraCuratorEvocateAction::Execute(Event event)

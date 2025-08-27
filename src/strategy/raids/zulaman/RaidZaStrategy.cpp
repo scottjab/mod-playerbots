@@ -14,7 +14,7 @@ void RaidZaStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     // Jan'alai
     triggers.push_back(new TriggerNode("za janalai fire bombs",
-        NextAction::array(0, new NextAction("avoid aoe", ACTION_EMERGENCY + 5), nullptr)));
+        NextAction::array(0, new NextAction("za stack on master during bombs", ACTION_EMERGENCY + 6), new NextAction("avoid aoe", ACTION_EMERGENCY + 5), nullptr)));
     triggers.push_back(new TriggerNode("za janalai flame breath",
         NextAction::array(0, new NextAction("rear flank", ACTION_RAID + 1), nullptr)));
 
