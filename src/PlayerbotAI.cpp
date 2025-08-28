@@ -712,6 +712,8 @@ void PlayerbotAI::HandleTeleportAck()
             p << (uint32)0;  // time - not currently used
             bot->GetSession()->HandleMoveTeleportAck(p);
         };
+        if (sPlayerbotAIConfig->applyInstanceStrategies)
+            ApplyInstanceStrategies(bot->GetMapId(), true);
     }
     if (bot->IsBeingTeleportedFar())
     {
