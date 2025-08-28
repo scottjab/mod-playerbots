@@ -12,15 +12,6 @@
 #include "RaidOsStrategy.h"
 #include "RaidEoEStrategy.h"
 #include "RaidVoAStrategy.h"
-#include "RaidKaraStrategy.h"
-#include "RaidZaStrategy.h"
-#include "gruulslair/RaidGruulStrategy.h"
-#include "magtheridon/RaidMagStrategy.h"
-#include "serpentshrine/RaidSscStrategy.h"
-#include "theeye/RaidTkStrategy.h"
-#include "hyjal/RaidHyjalStrategy.h"
-#include "blacktemple/RaidBtStrategy.h"
-#include "sunwell/RaidSwpStrategy.h"
 #include "RaidUlduarStrategy.h"
 #include "RaidOnyxiaStrategy.h"
 #include "RaidIccStrategy.h"
@@ -43,15 +34,6 @@ public:
         creators["voa"] = &RaidStrategyContext::voa;
         creators["uld"] = &RaidStrategyContext::uld;
         creators["onyxia"] = &RaidStrategyContext::onyxia;
-        creators["za"] = &RaidStrategyContext::za;
-        creators["gruul"] = &RaidStrategyContext::gruul;
-        creators["magtheridon"] = &RaidStrategyContext::magtheridon;
-        creators["ssc"] = &RaidStrategyContext::ssc;
-        creators["tk"] = &RaidStrategyContext::tk;
-        creators["hyjal"] = &RaidStrategyContext::hyjal;
-        creators["bt"] = &RaidStrategyContext::bt;
-        creators["swp"] = &RaidStrategyContext::swp;
-        creators["kara"] = &RaidStrategyContext::kara;
         creators["icc"] = &RaidStrategyContext::icc;
         creators["kara"] = &RaidStrategyContext::kara;
     }
@@ -70,19 +52,7 @@ private:
     static Strategy* onyxia(PlayerbotAI* botAI) { return new RaidOnyxiaStrategy(botAI); }
     static Strategy* uld(PlayerbotAI* botAI) { return new RaidUlduarStrategy(botAI); }
     static Strategy* icc(PlayerbotAI* botAI) { return new RaidIccStrategy(botAI); }
-<<<<<<< HEAD
-    static Strategy* za(PlayerbotAI* botAI) { return new RaidZaStrategy(botAI); }
     static Strategy* kara(PlayerbotAI* botAI) { return new RaidKaraStrategy(botAI); }
-    static Strategy* gruul(PlayerbotAI* botAI) { return new RaidGruulStrategy(botAI); }
-    static Strategy* magtheridon(PlayerbotAI* botAI) { return new RaidMagStrategy(botAI); }
-    static Strategy* ssc(PlayerbotAI* botAI) { return new RaidSscStrategy(botAI); }
-    static Strategy* tk(PlayerbotAI* botAI) { return new RaidTkStrategy(botAI); }
-    static Strategy* hyjal(PlayerbotAI* botAI) { return new RaidHyjalStrategy(botAI); }
-    static Strategy* bt(PlayerbotAI* botAI) { return new RaidBtStrategy(botAI); }
-    static Strategy* swp(PlayerbotAI* botAI) { return new RaidSwpStrategy(botAI); };
-=======
-    static Strategy* kara(PlayerbotAI* botAI) { return new RaidKaraStrategy(botAI); }
->>>>>>> ded946ba (feat(mod-playerbots/ZA): add Zul'Aman raid actions)
 };
 
 #endif

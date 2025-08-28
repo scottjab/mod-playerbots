@@ -13,7 +13,6 @@ public:
         creators["ssc lurker rear flank"] = &RaidSscActionContext::lurker_flank;
         creators["ssc interrupt caribdis"] = &RaidSscActionContext::caribdis_interrupt;
         creators["ssc attack karathress totem"] = &RaidSscActionContext::karathress_totem;
-        creators["ssc attack karathress target"] = &RaidSscActionContext::karathress_target;
     }
 
 private:
@@ -21,7 +20,6 @@ private:
     static Action* lurker_flank(PlayerbotAI* ai) { return new RaidSscRearFlankLurkerAction(ai); }
     static Action* caribdis_interrupt(PlayerbotAI* ai) { return new RaidSscInterruptCaribdisAction(ai); }
     static Action* karathress_totem(PlayerbotAI* ai) { return new RaidSscAttackKarathressTotemAction(ai); }
-    static Action* karathress_target(PlayerbotAI* ai) { return new RaidSscAttackKarathressTargetAction(ai); }
 };
 
 #endif
