@@ -30,6 +30,18 @@ void RaidSscStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode("ssc karathress totem",
         NextAction::array(0, new NextAction("ssc attack karathress totem", ACTION_EMERGENCY + 7), nullptr)));
 
+    // Karathress: Sear Nova -> avoid aoe (especially melee)
+    triggers.push_back(new TriggerNode("ssc karathress sear nova",
+        NextAction::array(0, new NextAction("avoid aoe", ACTION_EMERGENCY + 5), new NextAction("stop non melee", ACTION_EMERGENCY + 4), nullptr)));
+
+    // Karathress: Power-of-* -> use defensives
+    triggers.push_back(new TriggerNode("ssc karathress power",
+        NextAction::array(0, new NextAction("use trinket", ACTION_EMERGENCY + 2), nullptr)));
+
+    // Karathress: Blessing of the Tides -> purge/cleanse priority
+    triggers.push_back(new TriggerNode("ssc karathress blessing",
+        NextAction::array(0, new NextAction("purge", ACTION_DISPEL + 2), nullptr)));
+
     // Karathress: general encounter active -> follow fight plan (handled by core actions/targeting)
     triggers.push_back(new TriggerNode("ssc karathress encounter",
         NextAction::array(0, new NextAction("ssc attack karathress target", ACTION_HIGH + 3), nullptr)));

@@ -52,6 +52,27 @@ public:
     bool IsActive() override;
 };
 
+class SscKarathressSearNovaTrigger : public Trigger
+{
+public:
+    SscKarathressSearNovaTrigger(PlayerbotAI* botAI) : Trigger(botAI, "ssc karathress sear nova") {}
+    bool IsActive() override;
+};
+
+class SscKarathressPowerTrigger : public Trigger
+{
+public:
+    SscKarathressPowerTrigger(PlayerbotAI* botAI) : Trigger(botAI, "ssc karathress power") {}
+    bool IsActive() override;
+};
+
+class SscKarathressBlessingTrigger : public Trigger
+{
+public:
+    SscKarathressBlessingTrigger(PlayerbotAI* botAI) : Trigger(botAI, "ssc karathress blessing") {}
+    bool IsActive() override;
+};
+
 class SscVashjAddPhaseTrigger : public Trigger
 {
 public:

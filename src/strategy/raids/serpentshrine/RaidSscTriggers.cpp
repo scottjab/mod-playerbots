@@ -162,6 +162,42 @@ bool SscKarathressEncounterTrigger::IsActive()
     return false;
 }
 
+// Karathress: Sear Nova (38445) cast on boss – prompt melee to avoid AOE burst
+bool SscKarathressSearNovaTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21214"); // Karathress
+    for (ObjectGuid guid : npcs)
+        if (Unit* kara = botAI->GetUnit(guid))
+            if (kara->IsAlive())
+                if (Spell* spell = kara->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+                    if (spell->m_spellInfo && spell->m_spellInfo->Id == 38445)
+                        return true;
+    return false;
+}
+
+// Karathress: Power-of-* buffs on Karathress (38452/38451/38455) – prompt defensives
+bool SscKarathressPowerTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21214");
+    for (ObjectGuid guid : npcs)
+        if (Unit* kara = botAI->GetUnit(guid))
+            if (kara->IsAlive())
+                if (kara->HasAura(38452) || kara->HasAura(38451) || kara->HasAura(38455))
+                    return true;
+    return false;
+}
+
+// Karathress: Blessing of the Tides (38449) – dispellable, prioritize purge/dispels
+bool SscKarathressBlessingTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21214");
+    for (ObjectGuid guid : npcs)
+        if (Unit* kara = botAI->GetUnit(guid))
+            if (kara->IsAlive() && kara->HasAura(38449))
+                return true;
+    return false;
+}
+
 // Vashj: Add phase when boss has Magic Barrier (38112) removed and adds are present (simplified: check nearby adds)
 bool SscVashjAddPhaseTrigger::IsActive()
 {
