@@ -14,6 +14,7 @@ public:
         creators["ssc lurker spout"] = &RaidSscTriggerContext::lurker_spout;
         creators["ssc leotheras whirlwind"] = &RaidSscTriggerContext::leotheras_whirlwind;
         creators["ssc karathress caribdis cast"] = &RaidSscTriggerContext::karathress_caribdis;
+        creators["ssc karathress encounter"] = &RaidSscTriggerContext::karathress_encounter;
         creators["ssc karathress totem"] = &RaidSscTriggerContext::karathress_totem;
         creators["ssc vashj add phase"] = &RaidSscTriggerContext::vashj_add_phase;
     }
@@ -24,6 +25,7 @@ private:
     static Trigger* lurker_spout(PlayerbotAI* ai) { return new SscLurkerSpoutTrigger(ai); }
     static Trigger* leotheras_whirlwind(PlayerbotAI* ai) { return new SscLeotherasWhirlwindTrigger(ai); }
     static Trigger* karathress_caribdis(PlayerbotAI* ai) { return new SscKarathressCaribdisCastTrigger(ai); }
+    static Trigger* karathress_encounter(PlayerbotAI* ai) { return new SscKarathressEncounterTrigger(ai); }
     static Trigger* karathress_totem(PlayerbotAI* ai) { return new SscKarathressTotemSpawnedTrigger(ai); }
     static Trigger* vashj_add_phase(PlayerbotAI* ai) { return new SscVashjAddPhaseTrigger(ai); }
 };

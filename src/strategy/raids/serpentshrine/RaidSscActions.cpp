@@ -43,7 +43,29 @@ bool RaidSscAttackKarathressTotemAction::Execute(Event /*event*/)
         for (ObjectGuid guid : npcs)
             if (Unit* u = botAI->GetUnit(guid))
                 if (u->IsAlive())
+                {
+                    // Avoid pulling from far away rooms
+                    if (bot->GetDistance(u) > 60.0f)
+                        continue;
                     return Attack(u);
+                }
+    }
+    return false;
+}
+
+// Karathress: focus priority per strat – Sharkkis > Tidalvess > Caribdis; then Karathress
+bool RaidSscAttackKarathressTargetAction::Execute(Event /*event*/)
+{
+    // Recommended kill order per strat: Tidalvess (Shaman) > Caribdis (Priest) > Sharkkis (Hunter) > Karathress
+    static const std::vector<std::string> priorities = { "tidalvess", "caribdis", "sharkkis", "karathress" };
+    for (auto const& name : priorities)
+    {
+        Unit* u = AI_VALUE2(Unit*, "find target", name);
+        if (!u || !u->IsAlive())
+            continue;
+        if (bot->GetDistance(u) > 80.0f)
+            continue;
+        return Attack(u);
     }
     return false;
 }

@@ -33,6 +33,13 @@ public:
     bool Execute(Event event) override;
 };
 
+class RaidSscAttackKarathressTargetAction : public AttackAction
+{
+public:
+    RaidSscAttackKarathressTargetAction(PlayerbotAI* ai) : AttackAction(ai, "ssc attack karathress target") {}
+    bool Execute(Event event) override;
+};
+
 #endif
 
 

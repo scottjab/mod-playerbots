@@ -38,6 +38,13 @@ public:
     bool IsActive() override;
 };
 
+class SscKarathressEncounterTrigger : public Trigger
+{
+public:
+    SscKarathressEncounterTrigger(PlayerbotAI* botAI) : Trigger(botAI, "ssc karathress encounter") {}
+    bool IsActive() override;
+};
+
 class SscKarathressTotemSpawnedTrigger : public Trigger
 {
 public:

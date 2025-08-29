@@ -30,6 +30,10 @@ void RaidSscStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode("ssc karathress totem",
         NextAction::array(0, new NextAction("ssc attack karathress totem", ACTION_EMERGENCY + 7), nullptr)));
 
+    // Karathress: general encounter active -> follow fight plan (handled by core actions/targeting)
+    triggers.push_back(new TriggerNode("ssc karathress encounter",
+        NextAction::array(0, new NextAction("ssc attack karathress target", ACTION_HIGH + 3), nullptr)));
+
     // Vashj add phase: focus adds
     triggers.push_back(new TriggerNode("ssc vashj add phase",
         NextAction::array(0, new NextAction("ssc attack vashj add", ACTION_RAID + 4), nullptr)));

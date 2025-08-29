@@ -68,12 +68,14 @@ bool SscKarathressCaribdisCastTrigger::IsActive()
 {
     if (Unit* caribdis = AI_VALUE2(Unit*, "find target", "caribdis"))
     {
-        if (caribdis->IsNonMeleeSpellCast(false))
-        {
-            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
-            return true;
-        }
+        // Only if close and encounter is active
+        if (bot->GetDistance(caribdis) < 40.0f && (caribdis->IsInCombat() || bot->IsInCombat()))
+            if (caribdis->IsNonMeleeSpellCast(false))
+            {
+                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                    LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
+                return true;
+            }
     }
     return false;
 }
@@ -81,6 +83,28 @@ bool SscKarathressCaribdisCastTrigger::IsActive()
 // Karathress totems nearby
 bool SscKarathressTotemSpawnedTrigger::IsActive()
 {
+    // Gate this trigger so it only fires when the Karathress encounter is actually nearby/active
+    auto encounterUnitNearbyAndActive = [&]() -> bool
+    {
+        static const std::vector<std::string> bosses = { "karathress", "caribdis", "tidalvess", "sharkkis" };
+        for (auto const& name : bosses)
+            if (Unit* boss = AI_VALUE2(Unit*, "find target", name))
+                if (boss->IsAlive())
+                {
+                    // Only consider this encounter if we are close to it and it's active (either boss or bot in combat)
+                    if (bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
+                        return true;
+                }
+        return false;
+    };
+
+    // Ensure we are in Serpentshrine Cavern (map 548)
+    if (bot->GetMapId() != 548)
+        return false;
+
+    if (!encounterUnitNearbyAndActive())
+        return false;
+
     static const std::vector<std::string> totems = { "22091", "22486", "22487" };
     for (auto const& entry : totems)
     {
@@ -89,11 +113,27 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
             if (Unit* u = botAI->GetUnit(guid))
                 if (u->IsAlive())
                 {
+                    // Avoid pulling from other rooms/halls
+                    if (bot->GetDistance(u) > 60.0f)
+                        continue;
                     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
                         LOG_INFO("playerbots", "[Raid][SSC] Karathress totem {} present", entry);
                     return true;
                 }
     }
+    return false;
+}
+
+// Karathress encounter is considered active if any of the council are nearby and in combat
+bool SscKarathressEncounterTrigger::IsActive()
+{
+    if (bot->GetMapId() != 548)
+        return false;
+    static const std::vector<std::string> bosses = { "karathress", "caribdis", "tidalvess", "sharkkis" };
+    for (auto const& name : bosses)
+        if (Unit* boss = AI_VALUE2(Unit*, "find target", name))
+            if (boss->IsAlive() && bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
+                return true;
     return false;
 }
 
