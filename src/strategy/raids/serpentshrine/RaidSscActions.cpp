@@ -27,10 +27,13 @@ bool RaidSscRearFlankLurkerAction::Execute(Event /*event*/)
 // Karathress: interrupt Caribdis (21964) heals and cyclone if in range
 bool RaidSscInterruptCaribdisAction::Execute(Event /*event*/)
 {
-    Unit* caribdis = AI_VALUE2(Unit*, "find target", "caribdis");
-    if (!caribdis)
-        return false;
-    return botAI->DoSpecificAction("interrupt");
+    // Prefer entry-based lookup for robustness (Caribdis 21964)
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21964");
+    for (ObjectGuid guid : npcs)
+        if (Unit* caribdis = botAI->GetUnit(guid))
+            if (caribdis->IsAlive() && bot->GetDistance(caribdis) < 40.0f)
+                return botAI->DoSpecificAction("interrupt");
+    return false;
 }
 
 // Karathress Totems: Spitfire(22091) > Earthbind(22486) > Poison Cleansing(22487)
@@ -83,15 +86,19 @@ bool RaidSscAttackKarathressTotemAction::Execute(Event /*event*/)
 bool RaidSscAttackKarathressTargetAction::Execute(Event /*event*/)
 {
     // Recommended kill order per strat: Tidalvess (Shaman) > Caribdis (Priest) > Sharkkis (Hunter) > Karathress
-    static const std::vector<std::string> priorities = { "tidalvess", "caribdis", "sharkkis", "karathress" };
-    for (auto const& name : priorities)
+    // Entries: Tidalvess 21965, Caribdis 21964, Sharkkis 21966, Karathress 21214
+    static const std::vector<std::string> priorities = { "21965", "21964", "21966", "21214" };
+    for (auto const& entry : priorities)
     {
-        Unit* u = AI_VALUE2(Unit*, "find target", name);
-        if (!u || !u->IsAlive())
-            continue;
-        if (bot->GetDistance(u) > 80.0f)
-            continue;
-        return Attack(u);
+        GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", entry);
+        for (ObjectGuid guid : npcs)
+            if (Unit* u = botAI->GetUnit(guid))
+                if (u->IsAlive())
+                {
+                    if (bot->GetDistance(u) > 80.0f)
+                        continue;
+                    return Attack(u);
+                }
     }
     return false;
 }

@@ -66,17 +66,20 @@ bool SscLeotherasWhirlwindTrigger::IsActive()
 // Karathress: Caribdis (21964) casting heal/cyclone (generic, check any current spell)
 bool SscKarathressCaribdisCastTrigger::IsActive()
 {
-    if (Unit* caribdis = AI_VALUE2(Unit*, "find target", "caribdis"))
-    {
-        // Only if close and encounter is active
-        if (bot->GetDistance(caribdis) < 40.0f && (caribdis->IsInCombat() || bot->IsInCombat()))
-            if (caribdis->IsNonMeleeSpellCast(false))
+    // Caribdis entry: 21964
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21964");
+    for (ObjectGuid guid : npcs)
+        if (Unit* caribdis = botAI->GetUnit(guid))
+            if (caribdis->IsAlive())
             {
-                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                    LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
-                return true;
+                if (bot->GetDistance(caribdis) < 40.0f && (caribdis->IsInCombat() || bot->IsInCombat()))
+                    if (caribdis->IsNonMeleeSpellCast(false))
+                    {
+                        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                            LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
+                        return true;
+                    }
             }
-    }
     return false;
 }
 
@@ -86,21 +89,33 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
     // Gate this trigger so it only fires when the Karathress encounter is actually nearby/active
     auto encounterUnitNearbyAndActive = [&]() -> bool
     {
-        static const std::vector<std::string> bosses = { "karathress", "caribdis", "tidalvess", "sharkkis" };
-        for (auto const& name : bosses)
-            if (Unit* boss = AI_VALUE2(Unit*, "find target", name))
-                if (boss->IsAlive())
-                {
-                    // Only consider this encounter if we are close to it and it's active (either boss or bot in combat)
-                    if (bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
-                        return true;
-                }
+        // Boss entries: Karathress 21214; Caribdis 21964; Tidalvess 21965; Sharkkis 21966
+        static const std::vector<std::string> bossEntries = { "21214", "21964", "21965", "21966" };
+        for (auto const& entry : bossEntries)
+        {
+            GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", entry);
+            for (ObjectGuid guid : npcs)
+                if (Unit* boss = botAI->GetUnit(guid))
+                    if (boss->IsAlive())
+                        if (bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
+                        {
+                            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                                LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter gating passed (entry {} nearby, dist {:.0f})", entry, bot->GetDistance(boss));
+                            return true;
+                        }
+        }
+        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+            LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter gating failed (no bosses nearby/in combat)");
         return false;
     };
 
     // Ensure we are in Serpentshrine Cavern (map 548)
     if (bot->GetMapId() != 548)
+    {
+        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+            LOG_INFO("playerbots", "[Raid][SSC] Karathress totem trigger ignored (mapId {} != 548)", bot->GetMapId());
         return false;
+    }
 
     if (!encounterUnitNearbyAndActive())
         return false;
@@ -129,11 +144,21 @@ bool SscKarathressEncounterTrigger::IsActive()
 {
     if (bot->GetMapId() != 548)
         return false;
-    static const std::vector<std::string> bosses = { "karathress", "caribdis", "tidalvess", "sharkkis" };
-    for (auto const& name : bosses)
-        if (Unit* boss = AI_VALUE2(Unit*, "find target", name))
-            if (boss->IsAlive() && bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
-                return true;
+    static const std::vector<std::string> bossEntries = { "21214", "21964", "21965", "21966" };
+    for (auto const& entry : bossEntries)
+    {
+        GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", entry);
+        for (ObjectGuid guid : npcs)
+            if (Unit* boss = botAI->GetUnit(guid))
+                if (boss->IsAlive() && bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
+                {
+                    if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                        LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter active (entry {} within {:.0f})", entry, bot->GetDistance(boss));
+                    return true;
+                }
+    }
+    if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+        LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter not active (no boss units in range)");
     return false;
 }
 
