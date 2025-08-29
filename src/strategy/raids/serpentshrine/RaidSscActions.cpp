@@ -6,7 +6,8 @@
 // Attack Vashj adds: prioritize Strider(22056) > Elite(22055) > Elemental(21958/22207)
 bool RaidSscAttackVashjAddAction::Execute(Event /*event*/)
 {
-    static const std::vector<std::string> priorities = { "22056", "22055", "21958", "22207" };
+    // Updated with DBM-aligned priority: Tainted Elemental (22009) first, then Strider, Elite, Enchanted/Other elementals
+    static const std::vector<std::string> priorities = { "22009", "22056", "22055", "21958", "22207" };
     for (auto const& entry : priorities)
     {
         GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", entry);

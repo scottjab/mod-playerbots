@@ -198,6 +198,120 @@ bool SscKarathressBlessingTrigger::IsActive()
     return false;
 }
 
+// Karathress: Cataclysmic Bolt (38441) – 50% max HP to a mana user
+bool SscKarathressCataclysmicBoltTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21214");
+    for (ObjectGuid guid : npcs)
+        if (Unit* kara = botAI->GetUnit(guid))
+            if (kara->IsAlive())
+                if (Spell* spell = kara->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+                    if (spell->m_spellInfo && spell->m_spellInfo->Id == 38441)
+                        return true;
+    return false;
+}
+
+// Caribdis: Cyclone summon (38337). Avoid cyclones nearby (move away if within 8yd)
+bool SscCaribdisCycloneTrigger::IsActive()
+{
+    // Cyclone creature entry used by Caribdis spell summons; use aura/spawn proximity check
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21964"); // ensure Caribdis in vicinity
+    if (npcs.empty())
+        return false;
+    // Use dynobjects or creatures named Cyclone are not easily filterable; use spell aura presence on boss as proxy
+    // If Caribdis is casting the summon or has recently cast, prompt movement
+    for (ObjectGuid guid : npcs)
+        if (Unit* caribdis = botAI->GetUnit(guid))
+            if (caribdis->IsAlive())
+            {
+                if (caribdis->IsNonMeleeSpellCast(false))
+                    return true;
+            }
+    return false;
+}
+
+// Caribdis: Tidal Surge (38358) – stop casting quickly
+bool SscCaribdisTidalSurgeTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21964");
+    for (ObjectGuid guid : npcs)
+        if (Unit* caribdis = botAI->GetUnit(guid))
+            if (caribdis->IsAlive())
+                if (Spell* spell = caribdis->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+                    if (spell->m_spellInfo && spell->m_spellInfo->Id == 38358)
+                        return true;
+    return false;
+}
+
+// Sharkkis: Bestial Wrath (38371) / The Beast Within (38373) – dispel/tranq
+bool SscSharkkisEnrageTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21966");
+    for (ObjectGuid guid : npcs)
+        if (Unit* sharkkis = botAI->GetUnit(guid))
+            if (sharkkis->IsAlive())
+                if (sharkkis->HasAura(38371) || sharkkis->HasAura(38373))
+                    return true;
+    return false;
+}
+
+// Vashj: Static Charge (38280) – on bot or party -> spread
+bool SscVashjStaticChargeTrigger::IsActive()
+{
+    if (bot->HasAura(38280))
+        return true;
+    // Also check party members to prompt spread; simple version: if any nearby ally has it
+    Group* group = bot->GetGroup();
+    if (!group)
+        return false;
+    Group::MemberSlotList const& members = group->GetMemberSlots();
+    for (auto const& slot : members)
+        if (Player* member = ObjectAccessor::FindPlayer(slot.guid))
+            if (member->IsAlive() && member->IsInWorld() && member->GetMapId() == bot->GetMapId())
+                if (bot->GetDistance(member) < 12.0f && member->HasAura(38280))
+                    return true;
+    return false;
+}
+
+// Vashj: Entangle (38316) – root; use trinket/stopcast
+bool SscVashjEntangleTrigger::IsActive()
+{
+    return bot->HasAura(38316);
+}
+
+// Vashj: Shock Blast (38509) – AOE burst around boss
+bool SscVashjShockBlastTrigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21212");
+    for (ObjectGuid guid : npcs)
+        if (Unit* vashj = botAI->GetUnit(guid))
+            if (vashj->IsAlive())
+                if (Spell* spell = vashj->GetCurrentSpell(CURRENT_GENERIC_SPELL))
+                    if (spell->m_spellInfo && spell->m_spellInfo->Id == 38509)
+                        return true;
+    return false;
+}
+
+// Vashj: Toxic Spores (38574) – avoid ground clouds (approximate: when Sporebat present, avoid AOE)
+bool SscVashjToxicSporesTrigger::IsActive()
+{
+    GuidVector bats = AI_VALUE2(GuidVector, "nearest npcs", "22140");
+    if (bats.empty())
+        return false;
+    return true;
+}
+
+// Vashj: Phase 3 (Magic Barrier removed) – use cooldowns
+bool SscVashjPhase3Trigger::IsActive()
+{
+    GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21212");
+    for (ObjectGuid guid : npcs)
+        if (Unit* vashj = botAI->GetUnit(guid))
+            if (vashj->IsAlive() && !vashj->HasAura(38112))
+                return true;
+    return false;
+}
+
 // Vashj: Add phase when boss has Magic Barrier (38112) removed and adds are present (simplified: check nearby adds)
 bool SscVashjAddPhaseTrigger::IsActive()
 {
