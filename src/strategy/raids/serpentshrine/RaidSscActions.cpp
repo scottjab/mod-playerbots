@@ -25,14 +25,60 @@ bool RaidSscRearFlankLurkerAction::Execute(Event /*event*/)
 }
 
 // Karathress: interrupt Caribdis (21964) heals and cyclone if in range
-bool RaidSscInterruptCaribdisAction::Execute(Event /*event*/)
+bool RaidSscInterruptCaribdisAction::Execute(Event event)
 {
     // Prefer entry-based lookup for robustness (Caribdis 21964)
     GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "21964");
     for (ObjectGuid guid : npcs)
         if (Unit* caribdis = botAI->GetUnit(guid))
             if (caribdis->IsAlive() && bot->GetDistance(caribdis) < 40.0f)
-                return botAI->DoSpecificAction("interrupt");
+            {
+                // Try class-appropriate interrupt actions; run silently to avoid "unknown action" spam
+                std::vector<std::string> interruptActions;
+                switch (bot->getClass())
+                {
+                    case CLASS_SHAMAN:
+                        interruptActions = { "wind shear", "earth shock" };
+                        break;
+                    case CLASS_ROGUE:
+                        interruptActions = { "kick" };
+                        break;
+                    case CLASS_WARRIOR:
+                        interruptActions = { "pummel", "shield bash" };
+                        break;
+                    case CLASS_MAGE:
+                        interruptActions = { "counterspell" };
+                        break;
+                    case CLASS_DEATH_KNIGHT:
+                        interruptActions = { "mind freeze" };
+                        break;
+                    case CLASS_PRIEST:
+                        interruptActions = { "silence" };
+                        break;
+                    case CLASS_HUNTER:
+                        interruptActions = { "silencing shot" };
+                        break;
+                    case CLASS_PALADIN:
+                        interruptActions = { "hammer of justice" };
+                        break;
+                    case CLASS_DRUID:
+                        interruptActions = { "bash", "maim" };
+                        break;
+                    default:
+                        break;
+                }
+                // Also include a generic fallback list in case specialization actions are available
+                std::vector<std::string> genericFallback = { "kick", "pummel", "shield bash", "wind shear", "counterspell", "mind freeze", "silence", "silencing shot" };
+                interruptActions.insert(interruptActions.end(), genericFallback.begin(), genericFallback.end());
+
+                for (std::string const& name : interruptActions)
+                    if (botAI->DoSpecificAction(name, event, true))
+                        return true;
+
+                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
+                    LOG_INFO("playerbots", "[Raid][SSC] No usable interrupt action for class {}", bot->getClass());
+                return false;
+            }
     return false;
 }
 
