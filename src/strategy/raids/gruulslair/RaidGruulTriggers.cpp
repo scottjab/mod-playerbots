@@ -9,7 +9,12 @@ bool GruulGroundSlamTrigger::IsActive()
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "gruul"))
     {
         if (Spell* spell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL))
-            return spell->m_spellInfo && spell->m_spellInfo->Id == 33525;
+            if (spell->m_spellInfo && spell->m_spellInfo->Id == 33525)
+            {
+                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                    LOG_INFO("playerbots", "[Raid][Gruul] Ground Slam casting");
+                return true;
+            }
     }
     return false;
 }
@@ -19,10 +24,18 @@ bool GruulShatterTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "gruul"))
         if (boss->HasAura(33654))
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][Gruul] Shatter incoming");
             return true;
+        }
 
     if (bot->HasAura(33671))
+    {
+        if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+            LOG_INFO("playerbots", "[Raid][Gruul] Shatter debuff on {}", bot->GetName());
         return true;
+    }
 
     return false;
 }

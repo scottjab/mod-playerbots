@@ -9,7 +9,12 @@ bool SscMorogrimEarthquakeTrigger::IsActive()
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "morogrim"))
     {
         if (Spell* spell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL))
-            return spell->m_spellInfo && spell->m_spellInfo->Id == 37764;
+            if (spell->m_spellInfo && spell->m_spellInfo->Id == 37764)
+            {
+                if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                    LOG_INFO("playerbots", "[Raid][SSC] Morogrim casting Earthquake");
+                return true;
+            }
     }
     return false;
 }
@@ -20,7 +25,11 @@ bool SscHydrossMarkTrigger::IsActive()
     static const uint32 hydrossMarks[] = { 38215, 38216, 38217, 38218, 38231, 40584, 38219, 38220, 38221, 38222, 38230, 40583 };
     for (uint32 id : hydrossMarks)
         if (bot->HasAura(id))
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Hydross Mark {} on {}", id, bot->GetName());
             return true;
+        }
     return false;
 }
 
@@ -28,7 +37,14 @@ bool SscHydrossMarkTrigger::IsActive()
 bool SscLurkerSpoutTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "lurker below"))
-        return boss->HasAura(37429) || boss->HasAura(37430);
+    {
+        if (boss->HasAura(37429) || boss->HasAura(37430))
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Lurker Spout active");
+            return true;
+        }
+    }
     return false;
 }
 
@@ -36,7 +52,14 @@ bool SscLurkerSpoutTrigger::IsActive()
 bool SscLeotherasWhirlwindTrigger::IsActive()
 {
     if (Unit* boss = AI_VALUE2(Unit*, "find target", "leotheras"))
-        return boss->HasAura(37640);
+    {
+        if (boss->HasAura(37640))
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Leotheras Whirlwind active");
+            return true;
+        }
+    }
     return false;
 }
 
@@ -44,7 +67,14 @@ bool SscLeotherasWhirlwindTrigger::IsActive()
 bool SscKarathressCaribdisCastTrigger::IsActive()
 {
     if (Unit* caribdis = AI_VALUE2(Unit*, "find target", "caribdis"))
-        return caribdis->IsNonMeleeSpellCast(false);
+    {
+        if (caribdis->IsNonMeleeSpellCast(false))
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
+            return true;
+        }
+    }
     return false;
 }
 
@@ -58,7 +88,11 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
         for (ObjectGuid guid : npcs)
             if (Unit* u = botAI->GetUnit(guid))
                 if (u->IsAlive())
+                {
+                    if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                        LOG_INFO("playerbots", "[Raid][SSC] Karathress totem {} present", entry);
                     return true;
+                }
     }
     return false;
 }
@@ -69,9 +103,19 @@ bool SscVashjAddPhaseTrigger::IsActive()
     if (Unit* vashj = AI_VALUE2(Unit*, "find target", "lady vashj"))
     {
         GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "22055");
-        if (!npcs.empty()) return true;
+        if (!npcs.empty())
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Vashj add present (Coilfang Elite)");
+            return true;
+        }
         npcs = AI_VALUE2(GuidVector, "nearest npcs", "22056");
-        if (!npcs.empty()) return true;
+        if (!npcs.empty())
+        {
+            if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                LOG_INFO("playerbots", "[Raid][SSC] Vashj add present (Coilfang Strider)");
+            return true;
+        }
     }
     return false;
 }
