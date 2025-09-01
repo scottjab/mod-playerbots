@@ -52,7 +52,7 @@ bool RaidZaKillHalazziTotemAction::Execute(Event /*event*/)
     GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", "24224");
     for (ObjectGuid guid : npcs)
         if (Unit* u = botAI->GetUnit(guid))
-            if (u->IsAlive())
+            if (u->IsAlive() && u->GetEntry() == 24224)
                 return Attack(u);
     return false;
 }

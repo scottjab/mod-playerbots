@@ -77,7 +77,7 @@ bool RaidSscInterruptCaribdisAction::Execute(Event event)
                         return true;
 
                 if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
-                    LOG_INFO("playerbots", "[Raid][SSC] No usable interrupt action for class {}", bot->getClass());
+                    LOG_DEBUG("playerbots", "[Raid][SSC] No usable interrupt action for class {}", bot->getClass());
                 return false;
             }
     return false;
@@ -91,7 +91,7 @@ bool RaidSscAttackKarathressTotemAction::Execute(Event /*event*/)
     {
         GuidVector npcs = AI_VALUE2(GuidVector, "nearest npcs", entry);
         if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
-            LOG_INFO("playerbots", "[Raid][SSC] Karathress totem scan: entry {} -> {} nearby", entry, npcs.size());
+            LOG_DEBUG("playerbots", "[Raid][SSC] Karathress totem scan: entry {} -> {} nearby", entry, npcs.size());
         for (ObjectGuid guid : npcs)
         {
             if (Unit* u = botAI->GetUnit(guid))
@@ -103,29 +103,29 @@ bool RaidSscAttackKarathressTotemAction::Execute(Event /*event*/)
                     if (dist > 60.0f)
                     {
                         if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
-                            LOG_INFO("playerbots", "[Raid][SSC] Skipping totem {} at distance {} (>60)", entry, dist);
+                            LOG_DEBUG("playerbots", "[Raid][SSC] Skipping totem {} at distance {} (>60)", entry, dist);
                         continue;
                     }
                     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
-                        LOG_INFO("playerbots", "[Raid][SSC] Attacking Karathress totem {} at distance {}", entry, dist);
+                        LOG_DEBUG("playerbots", "[Raid][SSC] Attacking Karathress totem {} at distance {}", entry, dist);
                     bool attacked = Attack(u);
                     if (!attacked && (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT)))
-                        LOG_INFO("playerbots", "[Raid][SSC] Attack call on totem {} returned false", entry);
+                        LOG_DEBUG("playerbots", "[Raid][SSC] Attack call on totem {} returned false", entry);
                     return attacked;
                 }
                 else if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
                 {
-                    LOG_INFO("playerbots", "[Raid][SSC] Found totem {} but it is dead (guid={})", entry, guid.ToString());
+                    LOG_DEBUG("playerbots", "[Raid][SSC] Found totem {} but it is dead (guid={})", entry, guid.ToString());
                 }
             }
             else if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
             {
-                LOG_INFO("playerbots", "[Raid][SSC] Nearby totem guid could not be resolved (entry {}, guid={})", entry, guid.ToString());
+                LOG_DEBUG("playerbots", "[Raid][SSC] Nearby totem guid could not be resolved (entry {}, guid={})", entry, guid.ToString());
             }
         }
     }
     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT) || botAI->HasStrategy("debug", BOT_STATE_COMBAT))
-        LOG_INFO("playerbots", "[Raid][SSC] No valid Karathress totems to attack (none alive or in range)");
+        LOG_DEBUG("playerbots", "[Raid][SSC] No valid Karathress totems to attack (none alive or in range)");
     return false;
 }
 

@@ -76,7 +76,7 @@ bool SscKarathressCaribdisCastTrigger::IsActive()
                     if (caribdis->IsNonMeleeSpellCast(false))
                     {
                         if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                            LOG_INFO("playerbots", "[Raid][SSC] Caribdis casting");
+                            LOG_DEBUG("playerbots", "[Raid][SSC] Caribdis casting");
                         return true;
                     }
             }
@@ -100,12 +100,12 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
                         if (bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
                         {
                             if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                                LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter gating passed (entry {} nearby, dist {:.0f})", entry, bot->GetDistance(boss));
+                                LOG_DEBUG("playerbots", "[Raid][SSC] Karathress encounter gating passed (entry {} nearby, dist {:.0f})", entry, bot->GetDistance(boss));
                             return true;
                         }
         }
         if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-            LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter gating failed (no bosses nearby/in combat)");
+            LOG_DEBUG("playerbots", "[Raid][SSC] Karathress encounter gating failed (no bosses nearby/in combat)");
         return false;
     };
 
@@ -113,7 +113,7 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
     if (bot->GetMapId() != 548)
     {
         if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-            LOG_INFO("playerbots", "[Raid][SSC] Karathress totem trigger ignored (mapId {} != 548)", bot->GetMapId());
+            LOG_DEBUG("playerbots", "[Raid][SSC] Karathress totem trigger ignored (mapId {} != 548)", bot->GetMapId());
         return false;
     }
 
@@ -132,7 +132,7 @@ bool SscKarathressTotemSpawnedTrigger::IsActive()
                     if (bot->GetDistance(u) > 60.0f)
                         continue;
                     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                        LOG_INFO("playerbots", "[Raid][SSC] Karathress totem {} present", entry);
+                        LOG_DEBUG("playerbots", "[Raid][SSC] Karathress totem {} present", entry);
                     return true;
                 }
     }
@@ -153,12 +153,12 @@ bool SscKarathressEncounterTrigger::IsActive()
                 if (boss->IsAlive() && bot->GetDistance(boss) < 120.0f && (boss->IsInCombat() || bot->IsInCombat()))
                 {
                     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-                        LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter active (entry {} within {:.0f})", entry, bot->GetDistance(boss));
+                        LOG_DEBUG("playerbots", "[Raid][SSC] Karathress encounter active (entry {} within {:.0f})", entry, bot->GetDistance(boss));
                     return true;
                 }
     }
     if (botAI->HasStrategy("debug", BOT_STATE_NON_COMBAT))
-        LOG_INFO("playerbots", "[Raid][SSC] Karathress encounter not active (no boss units in range)");
+        LOG_DEBUG("playerbots", "[Raid][SSC] Karathress encounter not active (no boss units in range)");
     return false;
 }
 
