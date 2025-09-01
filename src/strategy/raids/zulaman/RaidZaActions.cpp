@@ -60,7 +60,39 @@ bool RaidZaKillHalazziTotemAction::Execute(Event /*event*/)
 // Move to bear's side (Nalorakk form awareness): just perform rear flank to avoid frontal cones
 bool RaidZaSwapToBearSideAction::Execute(Event /*event*/)
 {
-    return botAI->DoSpecificAction("rear flank");
+    // Prefer a side flank over strict rear to avoid pathing failures in tight spaces
+    Unit* target = AI_VALUE(Unit*, "current target");
+    if (!target)
+        return false;
+
+    // If already not in front and not in rear danger, do nothing
+    // Use the same angles as RearFlankAction for consistency
+    const float minAngle = ANGLE_90_DEG;
+    const float maxAngle = ANGLE_120_DEG;
+    bool inFront = target->HasInArc(2.f * minAngle, bot);
+    bool inRear = !target->HasInArc((2.f * M_PI) - maxAngle, bot);
+    if (!inFront && !inRear)
+        return false;
+
+    // Move to pure side: ±90° at melee range
+    float baseDistance = bot->GetMeleeRange(target) * 0.6f;
+    Position left = target->GetPosition();
+    Position right = target->GetPosition();
+    left.RelocatePolarOffset(ANGLE_90_DEG, baseDistance);
+    right.RelocatePolarOffset(-ANGLE_90_DEG, baseDistance);
+    Position* dest = (bot->GetExactDist2d(left) < bot->GetExactDist2d(right)) ? &left : &right;
+    return MoveTo(bot->GetMapId(), dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(), false, false, false, true, MovementPriority::MOVEMENT_COMBAT);
+}
+
+bool RaidZaSwapToBearSideAction::isUseful()
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    if (!target)
+        return false;
+    // Tanks maintain boss positioning; ranged shouldn't try to side-flank
+    if (botAI->IsTank(bot) || !botAI->IsMelee(bot))
+        return false;
+    return true;
 }
 
 

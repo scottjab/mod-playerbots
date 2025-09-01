@@ -31,6 +31,7 @@ class RaidZaSwapToBearSideAction : public MovementAction
 public:
     RaidZaSwapToBearSideAction(PlayerbotAI* botAI) : MovementAction(botAI, "za swap to bear side") {}
     bool Execute(Event event) override;
+    bool isUseful() override;
 };
 
 class RaidZaStackOnMasterDuringBombsAction : public MovementAction
