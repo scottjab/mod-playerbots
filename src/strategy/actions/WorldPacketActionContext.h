@@ -7,6 +7,7 @@
 #define _PLAYERBOT_WORLDPACKETACTIONCONTEXT_H
 
 #include "AcceptBattlegroundInvitationAction.h"
+#include "WintergraspActions.h"
 #include "AcceptDuelAction.h"
 #include "AcceptInvitationAction.h"
 #include "AcceptQuestAction.h"
@@ -101,6 +102,8 @@ public:
         creators["bg status"] = &WorldPacketActionContext::bg_status;
         creators["bg join"] = &WorldPacketActionContext::bg_join;
         creators["bg leave"] = &WorldPacketActionContext::bg_leave;
+        creators["wg queue invite"] = &WorldPacketActionContext::wg_queue_invite;
+        creators["wg entry invite"] = &WorldPacketActionContext::wg_entry_invite;
         creators["arena tactics"] = &WorldPacketActionContext::arena_tactics;
         creators["petition sign"] = &WorldPacketActionContext::petition_sign;
         creators["lfg join"] = &WorldPacketActionContext::lfg_join;
@@ -168,6 +171,8 @@ private:
     static Action* bg_strategy_check(PlayerbotAI* botAI) { return new BGStrategyCheckAction(botAI); }
     static Action* arena_tactics(PlayerbotAI* botAI) { return new ArenaTactics(botAI); }
     static Action* petition_sign(PlayerbotAI* botAI) { return new PetitionSignAction(botAI); }
+    static Action* wg_queue_invite(PlayerbotAI* botAI) { return new WgAcceptQueueInviteAction(botAI); }
+    static Action* wg_entry_invite(PlayerbotAI* botAI) { return new WgAcceptEntryInviteAction(botAI); }
     static Action* lfg_teleport(PlayerbotAI* botAI) { return new LfgTeleportAction(botAI); }
     static Action* lfg_leave(PlayerbotAI* botAI) { return new LfgLeaveAction(botAI); }
     static Action* lfg_accept(PlayerbotAI* botAI) { return new LfgAcceptAction(botAI); }

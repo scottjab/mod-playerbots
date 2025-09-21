@@ -61,6 +61,7 @@
 #include "SuggestWhatToDoAction.h"
 #include "TravelAction.h"
 #include "VehicleActions.h"
+#include "WintergraspActions.h"
 #include "WorldBuffAction.h"
 #include "XpGainAction.h"
 #include "NewRpgAction.h"
@@ -209,6 +210,9 @@ public:
 
         // Vehicles
         creators["enter vehicle"] = &ActionContext::enter_vehicle;
+        creators["wg queue invite"] = &ActionContext::wg_queue_invite;
+        creators["wg entry invite"] = &ActionContext::wg_entry_invite;
+        creators["wg ensure queued"] = &ActionContext::wg_ensure_queued;
         creators["leave vehicle"] = &ActionContext::leave_vehicle;
         creators["hurl boulder"] = &ActionContext::hurl_boulder;
         creators["ram"] = &ActionContext::ram;
@@ -397,6 +401,9 @@ private:
 
     // Vehicles
     static Action* enter_vehicle(PlayerbotAI* botAI) { return new EnterVehicleAction(botAI); }
+    static Action* wg_queue_invite(PlayerbotAI* botAI) { return new WgAcceptQueueInviteAction(botAI); }
+    static Action* wg_entry_invite(PlayerbotAI* botAI) { return new WgAcceptEntryInviteAction(botAI); }
+    static Action* wg_ensure_queued(PlayerbotAI* botAI) { return new WgEnsureQueuedAction(botAI); }
     static Action* leave_vehicle(PlayerbotAI* botAI) { return new LeaveVehicleAction(botAI); }
     static Action* hurl_boulder(PlayerbotAI* botAI) { return new CastHurlBoulderAction(botAI); }
     static Action* ram(PlayerbotAI* botAI) { return new CastRamAction(botAI); }

@@ -69,6 +69,10 @@ void IsleStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode("bg active", NextAction::array(0, new NextAction("bg check flag", ACTION_MOVE), nullptr)));
     triggers.push_back(new TriggerNode("timer", NextAction::array(0, new NextAction("enter vehicle", ACTION_MOVE + 8.0f), nullptr)));
+    // Wintergrasp basic tactic: if inside WG and no vehicle, try to enter a nearby friendly vehicle
+    triggers.push_back(new TriggerNode("vehicle near", NextAction::array(0, new NextAction("enter vehicle", ACTION_MOVE + 8.5f), nullptr)));
+    // Ensure bots in Wintergrasp zone proactively accept/queue even if packets were missed
+    triggers.push_back(new TriggerNode("timer", NextAction::array(0, new NextAction("wg ensure queued", ACTION_MOVE + 8.0f), nullptr)));
     triggers.push_back(new TriggerNode("random", NextAction::array(0, new NextAction("leave vehicle", ACTION_MOVE + 7.0f), nullptr)));
     triggers.push_back(new TriggerNode("in vehicle", NextAction::array(0, new NextAction("hurl boulder", ACTION_MOVE + 9.0f), nullptr)));
     triggers.push_back(new TriggerNode("in vehicle", NextAction::array(0, new NextAction("fire cannon", ACTION_MOVE + 9.0f), nullptr)));

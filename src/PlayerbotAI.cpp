@@ -191,6 +191,9 @@ PlayerbotAI::PlayerbotAI(Player* bot)
     botOutgoingPacketHandlers.AddHandler(SMSG_DUEL_REQUESTED, "duel requested");
     botOutgoingPacketHandlers.AddHandler(SMSG_INVENTORY_CHANGE_FAILURE, "inventory change failure");
     botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_STATUS, "bg status");
+    // Wintergrasp (BattlefieldMgr) invites
+    botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_MGR_ENTRY_INVITE, "wg entry invite");
+    botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_MGR_QUEUE_INVITE, "wg queue invite");
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_ROLE_CHECK_UPDATE, "lfg role check");
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_PROPOSAL_UPDATE, "lfg proposal");
     botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
