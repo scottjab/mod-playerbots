@@ -273,6 +273,8 @@ public:
     std::vector<uint32> pvpProhibitedZoneIds;
     std::vector<uint32> pvpProhibitedAreaIds;
     bool fastReactInBG;
+    // Wintergrasp controls
+    bool wintergraspEnable;
 
     bool randombotsWalkingRPG;
     bool randombotsWalkingRPGInDoors;

@@ -6,6 +6,7 @@
 #define _PLAYERBOT_WINTERGRASPACTIONS_H
 
 #include "Action.h"
+#include "MovementActions.h"
 
 // Auto-accept packet-driven invites
 
@@ -28,6 +29,24 @@ class WgEnsureQueuedAction : public Action
 {
 public:
     WgEnsureQueuedAction(PlayerbotAI* botAI) : Action(botAI, "wg ensure queued") {}
+    bool Execute(Event event) override;
+    bool isUseful() override;
+};
+
+// Choose an objective spot (attacker: approach walls/workshops; defender: towers/keep)
+class WgSelectObjectiveAction : public Action
+{
+public:
+    WgSelectObjectiveAction(PlayerbotAI* botAI) : Action(botAI, "wg select objective") {}
+    bool Execute(Event event) override;
+    bool isUseful() override;
+};
+
+// Move towards the selected objective
+class WgMoveToObjectiveAction : public MovementAction
+{
+public:
+    WgMoveToObjectiveAction(PlayerbotAI* botAI) : MovementAction(botAI, "wg move to objective") {}
     bool Execute(Event event) override;
     bool isUseful() override;
 };

@@ -21,6 +21,9 @@ void BattlegroundStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode("bg waiting", NextAction::array(0, new NextAction("bg move to start", ACTION_BG), nullptr)));
     triggers.push_back(new TriggerNode("bg active", NextAction::array(0, new NextAction("bg move to objective", ACTION_BG), nullptr)));
     triggers.push_back(new TriggerNode("often", NextAction::array(0, new NextAction("bg check objective", ACTION_BG + 1), nullptr)));
+    // WG-specific: ensure objective is selected and movement toward it happens
+    triggers.push_back(new TriggerNode("bg active", NextAction::array(0, new NextAction("wg select objective", ACTION_BG + 0.5f), nullptr)));
+    triggers.push_back(new TriggerNode("often", NextAction::array(0, new NextAction("wg move to objective", ACTION_BG + 0.6f), nullptr)));
     triggers.push_back(new TriggerNode("dead", NextAction::array(0, new NextAction("bg reset objective force", ACTION_EMERGENCY), nullptr)));
     // triggers.push_back(new TriggerNode("enemy flagcarrier near", NextAction::array(0, new NextAction("attack enemy
     // flag carrier", 80.0f), nullptr))); triggers.push_back(new TriggerNode("team flagcarrier near",

@@ -213,6 +213,8 @@ public:
         creators["wg queue invite"] = &ActionContext::wg_queue_invite;
         creators["wg entry invite"] = &ActionContext::wg_entry_invite;
         creators["wg ensure queued"] = &ActionContext::wg_ensure_queued;
+        creators["wg select objective"] = &ActionContext::wg_select_objective;
+        creators["wg move to objective"] = &ActionContext::wg_move_to_objective;
         creators["leave vehicle"] = &ActionContext::leave_vehicle;
         creators["hurl boulder"] = &ActionContext::hurl_boulder;
         creators["ram"] = &ActionContext::ram;
@@ -404,6 +406,8 @@ private:
     static Action* wg_queue_invite(PlayerbotAI* botAI) { return new WgAcceptQueueInviteAction(botAI); }
     static Action* wg_entry_invite(PlayerbotAI* botAI) { return new WgAcceptEntryInviteAction(botAI); }
     static Action* wg_ensure_queued(PlayerbotAI* botAI) { return new WgEnsureQueuedAction(botAI); }
+    static Action* wg_select_objective(PlayerbotAI* botAI) { return new WgSelectObjectiveAction(botAI); }
+    static Action* wg_move_to_objective(PlayerbotAI* botAI) { return new WgMoveToObjectiveAction(botAI); }
     static Action* leave_vehicle(PlayerbotAI* botAI) { return new LeaveVehicleAction(botAI); }
     static Action* hurl_boulder(PlayerbotAI* botAI) { return new CastHurlBoulderAction(botAI); }
     static Action* ram(PlayerbotAI* botAI) { return new CastRamAction(botAI); }
