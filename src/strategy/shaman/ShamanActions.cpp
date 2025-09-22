@@ -124,3 +124,27 @@ bool SetTotemAction::Execute(Event event)
     bot->addActionButton(actionButtonId, totemSpell, ACTION_BUTTON_SPELL);
     return true;
 }
+
+bool SetTotemAction::isUseful()
+{
+    Player* bot = botAI->GetBot();
+    ActionButton const* button = bot->GetActionButton(actionButtonId);
+    if (!button || button->GetType() != ACTION_BUTTON_SPELL || button->GetAction() == 0)
+        return true; // No totem assigned
+
+    // Find the highest rank the bot knows
+    uint32 highestKnown = 0;
+    for (int i = (int)totemSpellIdsCount - 1; i >= 0; --i)
+    {
+        if (bot->HasSpell(totemSpellIds[i]))
+        {
+            highestKnown = totemSpellIds[i];
+            break;
+        }
+    }
+    if (!highestKnown)
+        return false; // Bot doesn't know any valid rank
+
+    // Only consider the bar set if the highest rank is assigned
+    return button->GetAction() != highestKnown;
+}
