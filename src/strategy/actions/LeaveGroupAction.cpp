@@ -117,6 +117,13 @@ bool LeaveFarAwayAction::isUseful()
     if (!bot->GetGroup())
         return false;
 
+    // Do not leave Battlefield/Battleground groups (e.g., Wintergrasp raid groups)
+    if (Group* g = bot->GetGroup())
+    {
+        if (g->isBGGroup() || g->isBFGroup())
+            return false;
+    }
+
     Player* master = botAI->GetGroupMaster();
     Player* trueMaster = botAI->GetMaster();
     if (!master || (bot == master && !botAI->IsRealPlayer()))

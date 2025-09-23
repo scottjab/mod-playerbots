@@ -1550,9 +1550,9 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         return false;
     }
 
-    // leave group if leader is rndbot
+    // leave group if leader is rndbot (but NOT in BG/BF groups like Wintergrasp)
     Group* group = player->GetGroup();
-    if (group && !group->isLFGGroup() && IsRandomBot(group->GetLeader()))
+    if (group && !group->isLFGGroup() && !group->isBGGroup() && !group->isBFGroup() && IsRandomBot(group->GetLeader()))
     {
         player->RemoveFromGroup();
         LOG_INFO("playerbots", "Bot {} remove from group since leader is random bot.", player->GetName().c_str());
