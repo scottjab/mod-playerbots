@@ -478,8 +478,9 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
     if (master)
     {
         ObjectGuid masterGuid = master->GetGUID();
-        if (master->GetGroup() && !master->GetGroup()->IsLeader(masterGuid))
-            master->GetGroup()->ChangeLeader(masterGuid);
+        Group* mgroup = master->GetGroup();
+        if (mgroup && !mgroup->IsLeader(masterGuid) && !mgroup->isBGGroup() && !mgroup->isBFGroup())
+            mgroup->ChangeLeader(masterGuid);
     }
 
     Group* group = bot->GetGroup();
@@ -514,7 +515,11 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
 
         if (!groupValid)
         {
-            bot->RemoveFromGroup();
+            // Do not auto-remove from Battlefield/Battleground groups (e.g., Wintergrasp raid)
+            if (!group->isBGGroup() && !group->isBFGroup())
+            {
+                bot->RemoveFromGroup();
+            }
         }
     }
 
