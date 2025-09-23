@@ -110,7 +110,6 @@ bool LeaveFarAwayAction::isUseful()
     if (!bot->GetGroup())
         return false;
 
-<<<<<<< HEAD
     // Do not leave Battlefield/Battleground groups (e.g., Wintergrasp raid groups)
     if (Group* g = bot->GetGroup())
     {
