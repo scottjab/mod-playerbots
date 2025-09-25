@@ -96,14 +96,11 @@ bool CastSpiritWalkAction::Execute(Event event)
 bool SetTotemAction::Execute(Event event)
 {
     uint32 totemSpell = 0;
-
-    // Iterate backwards to prioritize the highest-rank totem spell the bot knows
-    for (size_t i = totemSpellIdsCount; i-- > 0;)
+    for (size_t i = 0; i < totemSpellIdsCount; ++i)
     {
-        const uint32 spellId = totemSpellIds[i];
-        if (bot->HasSpell(spellId))
+        if (bot->HasSpell(totemSpellIds[i]))
         {
-            totemSpell = spellId;
+            totemSpell = totemSpellIds[i];
             break;
         }
     }
@@ -123,28 +120,4 @@ bool SetTotemAction::Execute(Event event)
 
     bot->addActionButton(actionButtonId, totemSpell, ACTION_BUTTON_SPELL);
     return true;
-}
-
-bool SetTotemAction::isUseful()
-{
-    Player* bot = botAI->GetBot();
-    ActionButton const* button = bot->GetActionButton(actionButtonId);
-    if (!button || button->GetType() != ACTION_BUTTON_SPELL || button->GetAction() == 0)
-        return true; // No totem assigned
-
-    // Find the highest rank the bot knows
-    uint32 highestKnown = 0;
-    for (int i = (int)totemSpellIdsCount - 1; i >= 0; --i)
-    {
-        if (bot->HasSpell(totemSpellIds[i]))
-        {
-            highestKnown = totemSpellIds[i];
-            break;
-        }
-    }
-    if (!highestKnown)
-        return false; // Bot doesn't know any valid rank
-
-    // Only consider the bar set if the highest rank is assigned
-    return button->GetAction() != highestKnown;
 }
