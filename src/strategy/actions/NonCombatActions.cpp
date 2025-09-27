@@ -10,17 +10,8 @@
 
 bool DrinkAction::Execute(Event event)
 {
-    if (bot->IsInCombat())
-        return false;
-
-    if (bot->IsMounted())
-        return false;
-
-    bool hasMana = AI_VALUE2(bool, "has mana", "self target");
-    if (!hasMana)
-        return false;
-
-    if (botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form","flight form", "swift flight form", nullptr))
+    // gatekeeper
+    if (!isPossible())
         return false;
 
     if (botAI->HasCheat(BotCheatMask::food))
@@ -78,13 +69,8 @@ bool DrinkAction::isPossible()
 
 bool EatAction::Execute(Event event)
 {
-    if (bot->IsInCombat())
-        return false;
-
-    if (bot->IsMounted())
-        return false;
-
-    if (botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form","flight form", "swift flight form", nullptr))
+    // gatekeeper
+    if (!isPossible())
         return false;
 
     if (botAI->HasCheat(BotCheatMask::food))
