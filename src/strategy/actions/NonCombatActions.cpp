@@ -13,12 +13,14 @@ bool DrinkAction::Execute(Event event)
     if (bot->IsInCombat())
         return false;
 
-    // Don't drink while mounted
     if (bot->IsMounted())
         return false;
 
     bool hasMana = AI_VALUE2(bool, "has mana", "self target");
     if (!hasMana)
+        return false;
+
+    if (botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form","flight form", "swift flight form", nullptr))
         return false;
 
     if (botAI->HasCheat(BotCheatMask::food))
@@ -58,13 +60,13 @@ bool DrinkAction::Execute(Event event)
     return UseItemAction::Execute(event);
 }
 
-bool DrinkAction::isUseful() 
-{ 
+bool DrinkAction::isUseful()
+{
     // check class uses mana
     if (!AI_VALUE2(bool, "has mana", "self target"))
         return false;
 
-    return UseItemAction::isUseful() && AI_VALUE2(uint8, "mana", "self target") < 100; 
+    return UseItemAction::isUseful() && AI_VALUE2(uint8, "mana", "self target") < 100;
 }
 
 bool DrinkAction::isPossible()
@@ -77,8 +79,10 @@ bool EatAction::Execute(Event event)
     if (bot->IsInCombat())
         return false;
 
-    // Don't eat while mounted
     if (bot->IsMounted())
+        return false;
+
+    if (botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form","flight form", "swift flight form", nullptr))
         return false;
 
     if (botAI->HasCheat(BotCheatMask::food))
