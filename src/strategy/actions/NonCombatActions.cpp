@@ -112,7 +112,5 @@ bool EatAction::isPossible()
 {
     return !bot->IsInCombat() &&
         !bot->IsMounted() &&
-        !botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form",
-            "aquatic form","flight form", "swift flight form", nullptr) &&
         (botAI->HasCheat(BotCheatMask::food) || UseItemAction::isPossible());
 }
