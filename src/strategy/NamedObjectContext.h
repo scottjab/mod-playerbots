@@ -150,9 +150,7 @@ public:
     {
         contexts.push_back(context);
         for (const auto& iter : context->creators)
-        {
             creators[iter.first] = iter.second;
-        }
     }
 };
 
@@ -211,6 +209,7 @@ public:
             if (T* object = create(name, botAI))
                 return created[name] = object;
         }
+
         return created[name];
     }
 
@@ -239,7 +238,6 @@ public:
         for (auto i = contexts.begin(); i != contexts.end(); i++)
         {
             std::set<std::string> supported = (*i)->supports();
-
             for (std::set<std::string>::const_iterator j = supported.begin(); j != supported.end(); ++j)
                 result.insert(*j);
         }
@@ -251,9 +249,7 @@ public:
     {
         std::set<std::string> result;
         for (typename std::unordered_map<std::string, T*>::const_iterator i = created.begin(); i != created.end(); i++)
-        {
             result.insert(i->first);
-        }
 
         return result;
     }
@@ -300,15 +296,14 @@ public:
     {
         factories.push_back(context);
         for (const auto& iter : context->creators)
-        {
             creators[iter.first] = iter.second;
-        }
     }
 
     T* GetContextObject(const std::string& name, PlayerbotAI* botAI)
     {
         if (T* object = create(name, botAI))
             return object;
+
         return nullptr;
     }
 };
