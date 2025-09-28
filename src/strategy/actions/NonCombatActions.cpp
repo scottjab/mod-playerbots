@@ -10,10 +10,6 @@
 
 bool DrinkAction::Execute(Event event)
 {
-    // gatekeeper
-    if (!isPossible())
-        return false;
-
     if (botAI->HasCheat(BotCheatMask::food))
     {
         // if (bot->IsNonMeleeSpellCast(true))
@@ -62,10 +58,6 @@ bool DrinkAction::isPossible()
 {
     return !bot->IsInCombat() &&
         !bot->IsMounted() &&
-<<<<<<< HEAD
-=======
-        AI_VALUE2(bool, "has mana", "self target") &&
->>>>>>> 5a332cdb (Update NonCombatActions.cpp)
         !botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form",
             "aquatic form","flight form", "swift flight form", nullptr) &&
         (botAI->HasCheat(BotCheatMask::food) || UseItemAction::isPossible());
@@ -73,10 +65,6 @@ bool DrinkAction::isPossible()
 
 bool EatAction::Execute(Event event)
 {
-    // gatekeeper
-    if (!isPossible())
-        return false;
-
     if (botAI->HasCheat(BotCheatMask::food))
     {
         // if (bot->IsNonMeleeSpellCast(true))
