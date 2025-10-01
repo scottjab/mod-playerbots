@@ -61,11 +61,7 @@ namespace ai::buff
             return false;
 
         if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
-<<<<<<< HEAD
         {
-=======
-        {        
->>>>>>> c57fc117 (Fix spacing issue and removed unnecessary spaces (#1684))
             for (int i = 0; i < MAX_SPELL_REAGENTS; ++i)
             {
                 if (info->Reagent[i] > 0)

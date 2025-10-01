@@ -135,6 +135,10 @@ bool LeaveFarAwayAction::isUseful()
     if (trueMaster && !GET_PLAYERBOT_AI(trueMaster))
         return false;
 
+    // Special case for Wintergrasp: bots should participate regardless of who's leading
+    if (bot->GetZoneId() == AREA_WINTERGRASP)
+        return false;
+
     if (botAI->IsAlt() &&
         (!masterBotAI || masterBotAI->IsRealPlayer()))  // Don't leave group when alt grouped with player master.
         return false;
