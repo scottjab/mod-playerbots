@@ -8,6 +8,7 @@
 #include "Event.h"
 #include "PlayerbotAIConfig.h"
 #include "Playerbots.h"
+#include "BattlefieldWG.h"
 
 bool LeaveGroupAction::Execute(Event event)
 {
@@ -124,6 +125,10 @@ bool LeaveFarAwayAction::isUseful()
             return false;
     }
 
+    // Additional check: Never leave if in Wintergrasp zone during an active battle
+    if (bot->GetZoneId() == AREA_WINTERGRASP && bot->InBattleground())
+        return false;
+
     Player* master = botAI->GetGroupMaster();
     Player* trueMaster = botAI->GetMaster();
     if (!master || (bot == master && !botAI->IsRealPlayer()))
@@ -136,6 +141,10 @@ bool LeaveFarAwayAction::isUseful()
         return false;
 
     if (trueMaster && !GET_PLAYERBOT_AI(trueMaster))
+        return false;
+
+    // Special case for Wintergrasp: bots should participate regardless of who's leading
+    if (bot->GetZoneId() == AREA_WINTERGRASP)
         return false;
 
     if (botAI->IsAlt() &&
