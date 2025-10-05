@@ -47,7 +47,6 @@ public:
     std::unordered_map<std::string, ObjectCreator> creators;
 
 public:
-    // Ensure safe deletion via base pointer when used polymorphically
     virtual ~NamedObjectFactory() = default;
 
     virtual T* create(std::string name, PlayerbotAI* botAI)

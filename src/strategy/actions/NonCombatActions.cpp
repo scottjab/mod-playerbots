@@ -47,9 +47,9 @@ bool DrinkAction::Execute(Event event)
     return UseItemAction::Execute(event);
 }
 
-bool DrinkAction::isUseful() 
-{ 
-    return UseItemAction::isUseful() && 
+bool DrinkAction::isUseful()
+{
+    return UseItemAction::isUseful() &&
         AI_VALUE2(bool, "has mana", "self target") &&
         AI_VALUE2(uint8, "mana", "self target") < 100;
 }
@@ -102,9 +102,9 @@ bool EatAction::Execute(Event event)
     return UseItemAction::Execute(event);
 }
 
-bool EatAction::isUseful() 
-{ 
-    return UseItemAction::isUseful() && 
+bool EatAction::isUseful()
+{
+    return UseItemAction::isUseful() &&
         AI_VALUE2(uint8, "health", "self target") < 100;
 }
 

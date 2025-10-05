@@ -1517,43 +1517,111 @@ void PlayerbotAI::ApplyInstanceStrategies(uint32 mapId, bool tellMaster)
     std::string strategyName;
     switch (mapId)
     {
-        case 249: strategyName = "onyxia"; break;
-        case 409: strategyName = "mc"; break;
-        case 469: strategyName = "bwl"; break;
-        case 509: strategyName = "aq20"; break;
-        case 533: strategyName = "naxx"; break;
-        // Burning Crusade raids
-        case 532: strategyName = "kara"; break;        // Karazhan
-        case 565: strategyName = "gruul"; break;       // Gruul's Lair
-        case 544: strategyName = "magtheridon"; break; // Magtheridon's Lair
-        case 548: strategyName = "ssc"; break;         // Serpentshrine Cavern
-        case 550: strategyName = "tk"; break;          // Tempest Keep: The Eye
-        case 534: strategyName = "hyjal"; break;       // Hyjal Summit
-        case 564: strategyName = "bt"; break;          // Black Temple
-        case 580: strategyName = "swp"; break;         // Sunwell Plateau
-        case 568: strategyName = "za"; break;          // Zul'Aman
-        // WotLK dungeons and raids
-        case 574: strategyName = "wotlk-uk"; break;  // Utgarde Keep
-        case 575: strategyName = "wotlk-up"; break;  // Utgarde Pinnacle
-        case 576: strategyName = "wotlk-nex"; break; // The Nexus
-        case 578: strategyName = "wotlk-occ"; break; // The Oculus
-        case 595: strategyName = "wotlk-cos"; break; // The Culling of Stratholme
-        case 599: strategyName = "wotlk-hos"; break; // Halls of Stone
-        case 600: strategyName = "wotlk-dtk"; break; // Drak'Tharon Keep
-        case 601: strategyName = "wotlk-an"; break;  // Azjol-Nerub
-        case 602: strategyName = "wotlk-hol"; break; // Halls of Lightning
-        case 603: strategyName = "uld"; break;       // Ulduar
-        case 604: strategyName = "wotlk-gd"; break;  // Gundrak
-        case 608: strategyName = "wotlk-vh"; break;  // Violet Hold
-        case 615: strategyName = "wotlk-os"; break;  // Obsidian Sanctum
-        case 616: strategyName = "wotlk-eoe"; break; // Eye Of Eternity
-        case 619: strategyName = "wotlk-ok"; break;  // Ahn'kahet: The Old Kingdom
-        case 624: strategyName = "voa"; break;       // Vault of Archavon
-        case 631: strategyName = "icc"; break;       // Icecrown Citadel
-        case 632: strategyName = "wotlk-fos"; break; // The Forge of Souls
-        case 650: strategyName = "wotlk-toc"; break; // Trial of the Champion
-        case 658: strategyName = "wotlk-pos"; break; // Pit of Saron
-        case 668: strategyName = "wotlk-hor"; break; // Halls of Reflection
+        case 249:
+            strategyName = "onyxia";  // Onyxia's Lair
+            break;
+        case 409:
+            strategyName = "mc";  // Molten Core
+            break;
+        case 469:
+            strategyName = "bwl";  // Blackwing Lair
+            break;
+        case 509:
+            strategyName = "aq20";  // Ruins of Ahn'Qiraj
+            break;
+        case 532:
+            strategyName = "karazhan";  // Karazhan
+            break;
+        case 533:
+            strategyName = "naxx";  // Naxxramas
+            break;
+        case 544:
+            strategyName = "magtheridon";  // Magtheridon's Lair
+            break;
+        case 548:
+            strategyName = "ssc";  // Serpentshrine Cavern
+            break;
+        case 550:
+            strategyName = "tk";  // Tempest Keep: The Eye
+            break;
+        case 534:
+            strategyName = "hyjal";  // Hyjal Summit
+            break;
+        case 564:
+            strategyName = "bt";  // Black Temple
+            break;
+        case 565:
+            strategyName = "gruul";  // Gruul's Lair
+            break;
+        case 568:
+            strategyName = "za";  // Zul'Aman
+            break;
+        case 574:
+            strategyName = "wotlk-uk";  // Utgarde Keep
+            break;
+        case 575:
+            strategyName = "wotlk-up";  // Utgarde Pinnacle
+            break;
+        case 576:
+            strategyName = "wotlk-nex";  // The Nexus
+            break;
+        case 578:
+            strategyName = "wotlk-occ";  // The Oculus
+            break;
+        case 580:
+            strategyName = "swp";  // Sunwell Plateau
+            break;
+        case 595:
+            strategyName = "wotlk-cos";  // The Culling of Stratholme
+            break;
+        case 599:
+            strategyName = "wotlk-hos";  // Halls of Stone
+            break;
+        case 600:
+            strategyName = "wotlk-dtk";  // Drak'Tharon Keep
+            break;
+        case 601:
+            strategyName = "wotlk-an";  // Azjol-Nerub
+            break;
+        case 602:
+            strategyName = "wotlk-hol";  // Halls of Lightning
+            break;
+        case 603:
+            strategyName = "uld";  // Ulduar
+            break;
+        case 604:
+            strategyName = "wotlk-gd";  // Gundrak
+            break;
+        case 608:
+            strategyName = "wotlk-vh";  // Violet Hold
+            break;
+        case 615:
+            strategyName = "wotlk-os";  // Obsidian Sanctum
+            break;
+        case 616:
+            strategyName = "wotlk-eoe";  // Eye Of Eternity
+            break;
+        case 619:
+            strategyName = "wotlk-ok";  // Ahn'kahet: The Old Kingdom
+            break;
+        case 624:
+            strategyName = "voa";  // Vault of Archavon
+            break;
+        case 631:
+            strategyName = "icc";  // Icecrown Citadel
+            break;
+        case 632:
+            strategyName = "wotlk-fos";  // The Forge of Souls
+            break;
+        case 650:
+            strategyName = "wotlk-toc";  // Trial of the Champion
+            break;
+        case 658:
+            strategyName = "wotlk-pos";  // Pit of Saron
+            break;
+        case 668:
+            strategyName = "wotlk-hor";  // Halls of Reflection
+            break;
         default:
             break;
     }
