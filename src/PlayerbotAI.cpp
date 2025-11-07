@@ -358,7 +358,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // Update the bot's group status (moved to helper function)
-    UpdateAIGroupMembership();
+    UpdateAIGroupAndMaster();
 
     // Update internal AI
     UpdateAIInternal(elapsed, minimal);
@@ -366,47 +366,60 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 }
 
 // Helper function for UpdateAI to check group membership and handle removal if necessary
-void PlayerbotAI::UpdateAIGroupMembership()
+void PlayerbotAI::UpdateAIGroupAndMaster()
 {
-    if (!bot || !bot->GetGroup())
+    if (!bot)
+        return;
+    Group* group = bot->GetGroup();
+    // If bot is not in group verify that for is RandomBot before clearing  master and resetting.
+    if (!group)
+    {
+        if (master && sRandomPlayerbotMgr->IsRandomBot(bot))
+        {
+            SetMaster(nullptr);
+            Reset(true);
+            ResetStrategies();
+        }
+        return;
+    }
+
+    if (bot->InBattleground() && bot->GetBattleground()->GetBgTypeID() != BATTLEGROUND_AV)
         return;
 
-    Group* group = bot->GetGroup();
+    PlayerbotAI* botAI = GET_PLAYERBOT_AI(bot);
+    if (!botAI)
+        return;
 
-    if (!bot->InBattleground() && !bot->inRandomLfgDungeon() && !group->isLFGGroup())
+    PlayerbotAI* masterBotAI = nullptr;
+    if (master)
+        masterBotAI = GET_PLAYERBOT_AI(master);
+
+    if (!master || (masterBotAI && !masterBotAI->IsRealPlayer()))
     {
-        Player* leader = group->GetLeader();
-        if (leader && leader != bot)  // Ensure the leader is valid and not the bot itself
+        Player* newMaster = FindNewMaster();
+        if (newMaster)
         {
-            PlayerbotAI* leaderAI = GET_PLAYERBOT_AI(leader);
-            if (leaderAI && !leaderAI->IsRealPlayer())
+            master = newMaster;
+            botAI->SetMaster(newMaster);
+            botAI->ResetStrategies();
+
+            if (!bot->InBattleground())
             {
-                LeaveOrDisbandGroup();
+                botAI->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
+
+                if (botAI->GetMaster() == botAI->GetGroupMaster())
+                    botAI->TellMaster("Hello, I follow you!");
+                else
+                    botAI->TellMaster(!urand(0, 2) ? "Hello!" : "Hi!");
+            }
+            else
+            {
+                // we're in a battleground, stay with the pack and focus on objective
+                botAI->ChangeStrategy("-follow", BOT_STATE_NON_COMBAT);
             }
         }
-    }
-    else if (group->isLFGGroup())
-    {
-        bool hasRealPlayer = false;
-
-        // Iterate over all group members to check if at least one is a real player
-        for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-        {
-            Player* member = ref->GetSource();
-            if (!member)
-                continue;
-
-            PlayerbotAI* memberAI = GET_PLAYERBOT_AI(member);
-            if (memberAI && !memberAI->IsRealPlayer())
-                continue;
-
-            hasRealPlayer = true;
-            break;
-        }
-        if (!hasRealPlayer)
-        {
+        else if (!newMaster && !bot->InBattleground())
             LeaveOrDisbandGroup();
-        }
     }
 }
 
@@ -797,7 +810,6 @@ void PlayerbotAI::LeaveOrDisbandGroup()
 
     WorldPacket* packet = new WorldPacket(CMSG_GROUP_DISBAND);
     bot->GetSession()->QueuePacket(packet);
-    ResetStrategies();
 }
 
 bool PlayerbotAI::IsAllowedCommand(std::string const text)
@@ -1306,7 +1318,6 @@ void PlayerbotAI::DoNextAction(bool min)
         return;
     }
 
-
     // Change engine if just died
     bool isBotAlive = bot->IsAlive();
     if (currentEngine != engines[BOT_STATE_DEAD] && !isBotAlive)
@@ -1366,92 +1377,6 @@ void PlayerbotAI::DoNextAction(bool min)
 
     Group* group = bot->GetGroup();
     PlayerbotAI* masterBotAI = nullptr;
-    if (master)
-        masterBotAI = GET_PLAYERBOT_AI(master);
-
-    // Test BG master set
-    if ((!master || (masterBotAI && !masterBotAI->IsRealPlayer())) && group)
-    {
-        PlayerbotAI* botAI = GET_PLAYERBOT_AI(bot);
-        if (!botAI)
-        {
-            return;
-        }
-
-        // Ideally we want to have the leader as master.
-        Player* newMaster = botAI->GetGroupMaster();
-        Player* playerMaster = nullptr;
-
-        // Are there any non-bot players in the group?
-        if (!newMaster || GET_PLAYERBOT_AI(newMaster))
-        {
-            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
-            {
-                Player* member = gref->GetSource();
-                if (!member || member == bot || member == newMaster || !member->IsInWorld() ||
-                    !member->IsInSameRaidWith(bot))
-                    continue;
-
-                PlayerbotAI* memberBotAI = GET_PLAYERBOT_AI(member);
-                if (memberBotAI)
-                {
-                    if (memberBotAI->IsRealPlayer() && !bot->InBattleground())
-                        playerMaster = member;
-
-                    continue;
-                }
-
-                // Same BG checks (optimize checking conditions here)
-                if (bot->InBattleground() && bot->GetBattleground() &&
-                    bot->GetBattleground()->GetBgTypeID() == BATTLEGROUND_AV && !GET_PLAYERBOT_AI(member) &&
-                    member->InBattleground() && bot->GetMapId() == member->GetMapId())
-                {
-                    // Skip if same BG but same subgroup or lower level
-                    if (!group->SameSubGroup(bot, member) || member->GetLevel() < bot->GetLevel())
-                        continue;
-
-                    // Follow real player only if higher honor points
-                    uint32 honorpts = member->GetHonorPoints();
-                    if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
-                        continue;
-
-                    playerMaster = member;
-                    continue;
-                }
-
-                if (bot->InBattleground())
-                    continue;
-
-                newMaster = member;
-                break;
-            }
-        }
-
-        if (!newMaster && playerMaster)
-            newMaster = playerMaster;
-
-        if (newMaster && (!master || master != newMaster) && bot != newMaster)
-        {
-            master = newMaster;
-            botAI->SetMaster(newMaster);
-            botAI->ResetStrategies();
-
-            if (!bot->InBattleground())
-            {
-                botAI->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
-
-                if (botAI->GetMaster() == botAI->GetGroupMaster())
-                    botAI->TellMaster("Hello, I follow you!");
-                else
-                    botAI->TellMaster(!urand(0, 2) ? "Hello!" : "Hi!");
-            }
-            else
-            {
-                // we're in a battleground, stay with the pack and focus on objective
-                botAI->ChangeStrategy("-follow", BOT_STATE_NON_COMBAT);
-            }
-        }
-    }
 
     if (master && master->IsInWorld())
     {
@@ -1555,7 +1480,7 @@ void PlayerbotAI::ApplyInstanceStrategies(uint32 mapId, bool tellMaster)
             strategyName = "bt";  // Black Temple
             break;
         case 565:
-            strategyName = "gruul";  // Gruul's Lair
+            strategyName = "gruulslair";  // Gruul's Lair
             break;
         case 568:
             strategyName = "za";  // Zul'Aman
@@ -3196,8 +3121,10 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
 
-    // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
-    //     if (result != SPELL_FAILED_NOT_READY && result != SPELL_CAST_OK) {
+    // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+    // {
+    //     if (result != SPELL_FAILED_NOT_READY && result != SPELL_CAST_OK)
+    //     {
     //         LOG_DEBUG("playerbots", "CanCastSpell - target name: {}, spellid: {}, bot name: {}, result: {}",
     //             target->GetName(), spellid, bot->GetName(), result);
     //     }
@@ -3220,7 +3147,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
         default:
             if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
             {
-                // if (result != SPELL_FAILED_NOT_READY && result != SPELL_CAST_OK) {
                 LOG_DEBUG("playerbots",
                           "CanCastSpell Check Failed. - target name: {}, spellid: {}, bot name: {}, result: {}",
                           target->GetName(), spellid, bot->GetName(), result);
@@ -3403,7 +3329,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (bot->IsFlying() || bot->HasUnitState(UNIT_STATE_IN_FLIGHT))
     {
-        // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
+        // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+        // {
         //     LOG_DEBUG("playerbots", "Spell cast is flying - target name: {}, spellid: {}, bot name: {}}",
         //         target->GetName(), spellId, bot->GetName());
         // }
@@ -3448,7 +3375,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         {
             bot->GetTradeData()->SetSpell(spellId);
             delete spell;
-            // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
+            // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+            // {
             //     LOG_DEBUG("playerbots", "Spell cast no item - target name: {}, spellid: {}, bot name: {}",
             //         target->GetName(), spellId, bot->GetName());
             // }
@@ -3517,7 +3445,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     // spell->m_targets.SetUnitTarget(target);
     // SpellCastResult spellSuccess = spell->CheckCast(true);
-    // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
+    // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+    // {
     //     LOG_DEBUG("playerbots", "Spell cast result - target name: {}, spellid: {}, bot name: {}, result: {}",
     //         target->GetName(), spellId, bot->GetName(), spellSuccess);
     // }
@@ -3528,7 +3457,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (result != SPELL_CAST_OK)
     {
-        // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
+        // if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+        // {
         //     LOG_DEBUG("playerbots", "Spell cast failed. - target name: {}, spellid: {}, bot name: {}, result: {}",
         //         target->GetName(), spellId, bot->GetName(), result);
         // }
@@ -3595,7 +3525,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     //     {
     //         spell->cancel();
     //         delete spell;
-    //         if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster())) {
+    //         if (!sPlayerbotAIConfig->logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
+    //         {
     //             LOG_DEBUG("playerbots", "Spell cast loot - target name: {}, spellid: {}, bot name: {}",
     //                 target->GetName(), spellId, bot->GetName());
     //         }
@@ -4157,6 +4088,50 @@ bool IsAlliance(uint8 race)
 {
     return race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF || race == RACE_GNOME ||
            race == RACE_DRAENEI;
+}
+
+Player* PlayerbotAI::FindNewMaster()
+{
+    // Ideally we want to have the leader as master.
+    Group* group = bot->GetGroup();
+    // Only allow real players as masters unless in battleground.
+    if (!group)
+        return nullptr;
+
+    Player* groupLeader = GetGroupMaster();
+    PlayerbotAI* leaderBotAI = GET_PLAYERBOT_AI(groupLeader);
+    if (!leaderBotAI || leaderBotAI->IsRealPlayer())
+        return groupLeader;
+
+    // Find the real player in group
+    for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+    {
+        Player* member = gref->GetSource();
+        if (!member || member == bot || !member->IsInWorld() ||
+            !member->IsInSameRaidWith(bot))
+            continue;
+
+        PlayerbotAI* memberBotAI = GET_PLAYERBOT_AI(member);
+        if ((!memberBotAI || memberBotAI->IsRealPlayer()) && !bot->InBattleground())
+            return member;
+
+        if (bot->InBattleground() && bot->GetBattleground() &&
+            bot->GetBattleground()->GetBgTypeID() == BATTLEGROUND_AV && !GET_PLAYERBOT_AI(member) &&
+            member->InBattleground() && bot->GetMapId() == member->GetMapId())
+        {
+            // Skip if same BG but same subgroup or lower level
+            if (!group->SameSubGroup(bot, member) || member->GetLevel() < bot->GetLevel())
+                continue;
+
+            // Follow real player only if higher honor points
+            uint32 honorpts = member->GetHonorPoints();
+            if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
+                continue;
+
+            return member;
+        }
+    }
+    return nullptr;
 }
 
 bool PlayerbotAI::HasRealPlayerMaster()
@@ -4782,7 +4757,6 @@ uint32 PlayerbotAI::GetEquipGearScore(Player* player)
         sum += gearScore[i];
     }
 
-
     if (count)
     {
         uint32 res = uint32(sum / count);
@@ -5319,7 +5293,7 @@ Item* PlayerbotAI::FindOpenableItem() const
     return FindItemInInventory(
         [this](ItemTemplate const* itemTemplate) -> bool
         {
-            return (itemTemplate->Flags & ITEM_FLAG_HAS_LOOT) &&
+            return itemTemplate->HasFlag(ITEM_FLAG_HAS_LOOT) &&
                    (itemTemplate->LockID == 0 || !this->bot->GetItemByEntry(itemTemplate->ItemId)->IsLocked());
         });
 }
@@ -5470,7 +5444,7 @@ Item* PlayerbotAI::FindOilFor(Item* weapon) const
 
     if (prioritizedOils)
     {
-        for (const auto& id : *prioritizedOils)
+        for (auto const& id : *prioritizedOils)
         {
             oil = FindConsumable(id);
             if (oil)
