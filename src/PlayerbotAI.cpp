@@ -1483,18 +1483,6 @@ void PlayerbotAI::ApplyInstanceStrategies(uint32 mapId, bool tellMaster)
         case 544:
             strategyName = "magtheridon";  // Magtheridon's Lair
             break;
-        case 548:
-            strategyName = "ssc";  // Serpentshrine Cavern
-            break;
-        case 550:
-            strategyName = "tk";  // Tempest Keep: The Eye
-            break;
-        case 534:
-            strategyName = "hyjal";  // Hyjal Summit
-            break;
-        case 564:
-            strategyName = "bt";  // Black Temple
-            break;
         case 565:
             strategyName = "gruulslair";  // Gruul's Lair
             break;
