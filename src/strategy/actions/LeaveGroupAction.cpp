@@ -110,6 +110,7 @@ bool LeaveFarAwayAction::isUseful()
     if (!bot->GetGroup())
         return false;
 
+<<<<<<< HEAD
     // Do not leave Battlefield/Battleground groups (e.g., Wintergrasp raid groups)
     if (Group* g = bot->GetGroup())
     {
@@ -133,10 +134,6 @@ bool LeaveFarAwayAction::isUseful()
         return false;
 
     if (trueMaster && !GET_PLAYERBOT_AI(trueMaster))
-        return false;
-
-    // Special case for Wintergrasp: bots should participate regardless of who's leading
-    if (bot->GetZoneId() == AREA_WINTERGRASP)
         return false;
 
     if (botAI->IsAlt() &&
